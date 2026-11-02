@@ -28,12 +28,18 @@ class AssetViewModel : ViewModel() {
     private val _selectedStatus = MutableStateFlow<AssetStatus?>(null)
     val selectedStatus: StateFlow<AssetStatus?> = _selectedStatus.asStateFlow()
 
+    private val _selectedType = MutableStateFlow<String?>(null)
+    val selectedType: StateFlow<String?> = _selectedType.asStateFlow()
+
+    private val _selectedDepartment = MutableStateFlow<String?>(null)
+    val selectedDepartment: StateFlow<String?> = _selectedDepartment.asStateFlow()
+
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
     val filteredAssets: StateFlow<List<AssetUiModel>> = combine(
-        _assets, _searchQuery, _selectedStatus
-    ) { assetList, query, status ->
+        _assets, _searchQuery, _selectedStatus, _selectedType, _selectedDepartment
+    ) { assetList, query, status, type, department ->
         assetList.filter { asset ->
             val matchesQuery = query.isBlank() ||
                     asset.id.contains(query, ignoreCase = true) ||
@@ -43,13 +49,22 @@ class AssetViewModel : ViewModel() {
                     asset.serialNumber.contains(query, ignoreCase = true)
             
             val matchesStatus = status == null || asset.status == status
+            val matchesType = type == null || asset.typeName.equals(type, ignoreCase = true)
+            val matchesDepartment = department == null || asset.userRole.equals(department, ignoreCase = true)
 
-            matchesQuery && matchesStatus
+            matchesQuery && matchesStatus && matchesType && matchesDepartment
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun setSearchQuery(query: String) { _searchQuery.value = query }
     fun setStatusFilter(status: AssetStatus?) { _selectedStatus.value = status }
+    fun setTypeFilter(type: String?) { _selectedType.value = type }
+    fun setDepartmentFilter(department: String?) { _selectedDepartment.value = department }
+    fun clearFilters() {
+        _selectedStatus.value = null
+        _selectedType.value = null
+        _selectedDepartment.value = null
+    }
 
     init {
         fetchAssets()

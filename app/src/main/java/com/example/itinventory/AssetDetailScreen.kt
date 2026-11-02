@@ -51,14 +51,14 @@ fun AssetDetailScreen(assetId: String, onBackClick: () -> Unit = {}, onEditClick
     }
 
     Scaffold(
-        containerColor = LightBg,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = { AssetDetailTopBar(onBackClick) },
         floatingActionButton = {
             if (!isLoading && asset != null) {
                 ExtendedFloatingActionButton(
                     onClick = onEditClick,
-                    containerColor = PrimaryBlue,
-                    contentColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                     shape = RoundedCornerShape(32.dp)
                 ) {
                     Icon(Icons.Outlined.Edit, contentDescription = "Edit")
@@ -70,11 +70,11 @@ fun AssetDetailScreen(assetId: String, onBackClick: () -> Unit = {}, onEditClick
     ) { paddingValues ->
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryBlue)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else if (asset == null) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                Text("Asset not found.", color = TextLight)
+                Text("Asset not found.", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
             Column(
@@ -175,12 +175,12 @@ fun AssetDetailTopBar(onBackClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(LightBg)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = onBackClick) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = TextDark)
+            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
         }
         
         Spacer(modifier = Modifier.width(8.dp))
@@ -189,22 +189,9 @@ fun AssetDetailTopBar(onBackClick: () -> Unit) {
             text = "Asset Details",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = TextDark,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
-        
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(Icons.Outlined.Search, contentDescription = "Search", tint = TextDark)
-        }
-        
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .background(PrimaryBlue, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(Icons.Outlined.Person, contentDescription = "Profile", tint = Color.White, modifier = Modifier.size(20.dp))
-        }
     }
 }
 
@@ -220,7 +207,7 @@ fun AssetHeaderCard(asset: Asset?) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shadowElevation = 1.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -234,17 +221,17 @@ fun AssetHeaderCard(asset: Asset?) {
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .background(PrimaryBlue, CircleShape),
+                            .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Outlined.DesktopWindows, contentDescription = null, tint = Color.White, modifier = Modifier.size(28.dp))
+                        Icon(Icons.Outlined.DesktopWindows, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(28.dp))
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
                             text = "ASSET IDENTIFIER",
                             fontSize = 10.sp,
-                            color = TextLight,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             letterSpacing = 1.sp
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -252,18 +239,18 @@ fun AssetHeaderCard(asset: Asset?) {
                                 text = asset?.coreDetails?.serial?.takeIf { it.isNotBlank() } ?: assetNo,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = TextDark,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontFamily = FontFamily.Monospace
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Icon(Icons.Outlined.ContentCopy, contentDescription = "Copy", tint = TextLight, modifier = Modifier.size(16.dp))
+                            Icon(Icons.Outlined.ContentCopy, contentDescription = "Copy", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
                         }
                     }
                 }
                 
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = Color(0xFFEFF6FF)
+                    color = MaterialTheme.colorScheme.secondaryContainer
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -272,10 +259,10 @@ fun AssetHeaderCard(asset: Asset?) {
                         Box(
                             modifier = Modifier
                                 .size(6.dp)
-                                .background(PrimaryBlue, CircleShape)
+                                .background(MaterialTheme.colorScheme.primary, CircleShape)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("ACTIVE", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = PrimaryBlue)
+                        Text("ACTIVE", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -287,13 +274,13 @@ fun AssetHeaderCard(asset: Asset?) {
                 text = title,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = TextDark
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "Checked out to $user • $location",
                 fontSize = 13.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             Spacer(modifier = Modifier.height(20.dp))
@@ -316,8 +303,8 @@ fun ExpandableSection(
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        color = Color.White,
-        border = BorderStroke(1.dp, Color(0xFFF1F5F9)),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         shadowElevation = if (isExpanded) 1.dp else 0.dp
     ) {
         Column {
@@ -333,40 +320,40 @@ fun ExpandableSection(
                     Box(
                         modifier = Modifier
                             .size(36.dp)
-                            .background(Color(0xFFEFF6FF), RoundedCornerShape(8.dp)),
+                            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp)),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(icon, contentDescription = null, tint = PrimaryBlue, modifier = Modifier.size(20.dp))
+                        Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(title, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextDark)
+                            Text(title, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                             if (badgeText != null) {
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Surface(
-                                    color = Color(0xFFE0E7FF),
+                                    color = MaterialTheme.colorScheme.primaryContainer,
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Text(
                                         text = badgeText,
                                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
                                         fontSize = 10.sp,
-                                        color = PrimaryBlue,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                                         fontWeight = FontWeight.Medium
                                     )
                                 }
                             }
                         }
                         if (subtitle != null) {
-                            Text(subtitle, fontSize = 13.sp, color = TextLight)
+                            Text(subtitle, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
                 Icon(
                     imageVector = if (isExpanded) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore,
                     contentDescription = "Expand",
-                    tint = TextDark
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
             
@@ -447,23 +434,23 @@ fun HardwareContent(asset: Asset?) {
 @Composable
 fun SoftwareContent(asset: Asset?) {
     Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text("Operating System", fontWeight = FontWeight.Bold, color = PrimaryBlue, fontSize = 14.sp)
+        Text("Operating System", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
         DetailField("OS Name", asset?.software?.os?.name?.takeIf { it.isNotBlank() } ?: "N/A")
         DetailField("OS Bit", asset?.software?.os?.bit?.takeIf { it.isNotBlank() } ?: "N/A")
         DetailField("Product Key", asset?.software?.os?.productKey?.takeIf { it.isNotBlank() } ?: "N/A", isMonospace = true)
         
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Office", fontWeight = FontWeight.Bold, color = PrimaryBlue, fontSize = 14.sp)
+        Text("Office", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
         DetailField("Version", asset?.software?.office?.version?.takeIf { it.isNotBlank() } ?: "N/A")
         DetailField("Licence Key", asset?.software?.office?.licenceKey?.takeIf { it.isNotBlank() } ?: "N/A", isMonospace = true)
         
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Antivirus", fontWeight = FontWeight.Bold, color = PrimaryBlue, fontSize = 14.sp)
+        Text("Antivirus", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
         DetailField("Name", asset?.software?.antivirus?.name?.takeIf { it.isNotBlank() } ?: "N/A")
         DetailField("Expiry Date", asset?.software?.antivirus?.expiryDate?.takeIf { it.isNotBlank() } ?: "N/A")
         
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Other", fontWeight = FontWeight.Bold, color = PrimaryBlue, fontSize = 14.sp)
+        Text("Other", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, fontSize = 14.sp)
         DetailField("Other Apps", asset?.software?.otherApp?.takeIf { it.isNotBlank() } ?: "N/A")
     }
 }
@@ -502,7 +489,7 @@ fun DetailField(
         Text(
             text = label,
             fontSize = 12.sp,
-            color = TextLight,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         
@@ -513,7 +500,7 @@ fun DetailField(
         ) {
             if (isChip) {
                 Surface(
-                    color = Color(0xFFF1F5F9),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
@@ -522,20 +509,20 @@ fun DetailField(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         fontFamily = if (isMonospace) FontFamily.Monospace else FontFamily.Default,
                         fontSize = 13.sp,
-                        color = TextDark
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (leadingIcon != null) {
-                        Icon(leadingIcon, contentDescription = null, tint = PrimaryBlue, modifier = Modifier.size(16.dp))
+                        Icon(leadingIcon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
                     }
                     Text(
                         text = value,
                         fontFamily = if (isMonospace) FontFamily.Monospace else FontFamily.Default,
                         fontSize = 14.sp,
-                        color = TextDark,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = if (!isMonospace) FontWeight.Medium else FontWeight.Normal
                     )
                 }
@@ -545,7 +532,7 @@ fun DetailField(
                 Icon(
                     Icons.Outlined.ContentCopy, 
                     contentDescription = "Copy", 
-                    tint = TextLight, 
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant, 
                     modifier = Modifier.size(18.dp).clickable { }
                 )
             }

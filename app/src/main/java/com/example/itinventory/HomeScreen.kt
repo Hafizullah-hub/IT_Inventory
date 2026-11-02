@@ -3,9 +3,11 @@ package com.example.itinventory
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -67,7 +69,12 @@ fun HomeScreen(
         val filteredAssets by viewModel.filteredAssets.collectAsState()
         val searchQuery by viewModel.searchQuery.collectAsState()
         val selectedStatus by viewModel.selectedStatus.collectAsState()
+        val selectedType by viewModel.selectedType.collectAsState()
+        val selectedDepartment by viewModel.selectedDepartment.collectAsState()
         val isLoading by viewModel.isLoading.collectAsState()
+
+        val availableTypes = remember(allAssets) { allAssets.map { it.typeName }.distinct().sorted() }
+        val availableDepartments = remember(allAssets) { allAssets.map { it.userRole }.distinct().sorted() }
 
         HomeScreenContent(
             modifier = modifier,
@@ -75,9 +82,16 @@ fun HomeScreen(
             filteredAssets = filteredAssets,
             searchQuery = searchQuery,
             selectedStatus = selectedStatus,
+            selectedType = selectedType,
+            selectedDepartment = selectedDepartment,
+            availableTypes = availableTypes,
+            availableDepartments = availableDepartments,
             isLoading = isLoading,
             onSearchQueryChange = { viewModel.setSearchQuery(it) },
             onStatusSelect = { viewModel.setStatusFilter(it) },
+            onTypeSelect = { viewModel.setTypeFilter(it) },
+            onDepartmentSelect = { viewModel.setDepartmentFilter(it) },
+            onClearFilters = { viewModel.clearFilters() },
             onAssetClick = onAssetClick,
             onNewAssetClick = onNewAssetClick
         )
@@ -114,9 +128,16 @@ fun HomeScreen(
             filteredAssets = sampleAssets,
             searchQuery = "",
             selectedStatus = null,
+            selectedType = null,
+            selectedDepartment = null,
+            availableTypes = listOf("Laptop", "Desktop"),
+            availableDepartments = listOf("Engineering", "Design"),
             isLoading = false,
             onSearchQueryChange = {},
             onStatusSelect = {},
+            onTypeSelect = {},
+            onDepartmentSelect = {},
+            onClearFilters = {},
             onAssetClick = onAssetClick,
             onNewAssetClick = onNewAssetClick
         )
@@ -131,12 +152,21 @@ fun HomeScreenContent(
     filteredAssets: List<AssetUiModel>,
     searchQuery: String,
     selectedStatus: AssetStatus?,
+    selectedType: String?,
+    selectedDepartment: String?,
+    availableTypes: List<String>,
+    availableDepartments: List<String>,
     isLoading: Boolean,
     onSearchQueryChange: (String) -> Unit,
     onStatusSelect: (AssetStatus?) -> Unit,
+    onTypeSelect: (String?) -> Unit,
+    onDepartmentSelect: (String?) -> Unit,
+    onClearFilters: () -> Unit,
     onAssetClick: (String) -> Unit = {},
     onNewAssetClick: () -> Unit = {}
 ) {
+    var showFilterSheet by remember { mutableStateOf(false) }
+
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background,
@@ -163,7 +193,13 @@ fun HomeScreenContent(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item { HeaderSection() }
-            item { SearchSection(query = searchQuery, onQueryChange = onSearchQueryChange) }
+            item { 
+                SearchSection(
+                    query = searchQuery, 
+                    onQueryChange = onSearchQueryChange,
+                    onFilterClick = { showFilterSheet = true }
+                ) 
+            }
             item {
                 FilterChips(
                     allCount = allAssets.size,
@@ -202,6 +238,96 @@ fun HomeScreenContent(
                 }
             }
             item { FooterSection(totalAssets = filteredAssets.size) }
+        }
+    }
+
+    if (showFilterSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showFilterSheet = false },
+            containerColor = MaterialTheme.colorScheme.surface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Filter Assets",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                Text("Asset Type", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SelectableChip(
+                        text = "All",
+                        dotColor = null,
+                        isSelected = selectedType == null,
+                        onClick = { onTypeSelect(null) }
+                    )
+                    availableTypes.forEach { type ->
+                        SelectableChip(
+                            text = type,
+                            dotColor = null,
+                            isSelected = selectedType == type,
+                            onClick = { onTypeSelect(type) }
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text("Department", fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    SelectableChip(
+                        text = "All",
+                        dotColor = null,
+                        isSelected = selectedDepartment == null,
+                        onClick = { onDepartmentSelect(null) }
+                    )
+                    availableDepartments.forEach { dept ->
+                        SelectableChip(
+                            text = dept,
+                            dotColor = null,
+                            isSelected = selectedDepartment == dept,
+                            onClick = { onDepartmentSelect(dept) }
+                        )
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = onClearFilters,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Clear All")
+                    }
+                    Button(
+                        onClick = { showFilterSheet = false },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Apply")
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }
@@ -245,13 +371,22 @@ fun HeaderSection() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchSection(query: String, onQueryChange: (String) -> Unit) {
+fun SearchSection(
+    query: String, 
+    onQueryChange: (String) -> Unit,
+    onFilterClick: () -> Unit
+) {
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text("Search asset tag, serial, employee...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
         leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+        trailingIcon = {
+            IconButton(onClick = onFilterClick) {
+                Icon(Icons.Outlined.FilterList, contentDescription = "Filter", tint = MaterialTheme.colorScheme.primary)
+            }
+        },
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,

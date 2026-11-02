@@ -140,21 +140,21 @@ fun EditAssetScreen(assetId: String, onBackClick: () -> Unit, onDeleteCompleted:
                 title = { Text("Edit Asset", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onSurface)
                     }
                 },
                 actions = {
                     IconButton(onClick = { showDeleteConfirm = true }) {
-                        Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = Color(0xFFDC2626))
+                        Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
-                    titleContentColor = TextDark
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = LightBg
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (showDeleteConfirm) {
             AlertDialog(
@@ -171,7 +171,7 @@ fun EditAssetScreen(assetId: String, onBackClick: () -> Unit, onDeleteCompleted:
                                 }
                         }
                     ) {
-                        Text("Delete", color = Color(0xFFDC2626))
+                        Text("Delete", color = MaterialTheme.colorScheme.error)
                     }
                 },
                 dismissButton = {
@@ -184,7 +184,7 @@ fun EditAssetScreen(assetId: String, onBackClick: () -> Unit, onDeleteCompleted:
 
         if (isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryBlue)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else {
             Column(
@@ -198,7 +198,7 @@ fun EditAssetScreen(assetId: String, onBackClick: () -> Unit, onDeleteCompleted:
                 Text(
                     text = "Editing Asset: $assetId",
                     fontSize = 14.sp,
-                    color = TextLight,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
@@ -342,8 +342,8 @@ fun EditAssetScreen(assetId: String, onBackClick: () -> Unit, onDeleteCompleted:
                         .height(56.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryBlue,
-                    contentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 )
                 ) {
                     Text("Save Changes", fontSize = 16.sp, fontWeight = FontWeight.Bold)
@@ -360,7 +360,7 @@ fun FormSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shadowElevation = 1.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -368,7 +368,7 @@ fun FormSection(title: String, content: @Composable ColumnScope.() -> Unit) {
                 text = title,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = PrimaryBlue,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
             content()
