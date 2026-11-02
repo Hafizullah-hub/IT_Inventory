@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ITInventory" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Base Material DayNight colors -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Custom attributes for Light Mode -->
+        <item name="customBackgroundColor">#F8F9FA</item>
+        <item name="customTextColor">#1C1B1F</item>
+        <item name="customCardBackgroundColor">#FFFFFF</item>
+
+        <!-- Bottom Navigation View Style -->
+        <item name="bottomNavigationStyle">@style/Widget.ITInventory.BottomNavigationView</item>
+    </style>
+
+    <style name="Widget.ITInventory.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="itemIconTint">@color/bottom_nav_item_color</item>
+        <item name="itemTextColor">@color/bottom_nav_item_color</item>
+        <item name="itemActiveIndicatorStyle">@style/Widget.ITInventory.BottomNavIndicator</item>
+        <item name="elevation">8dp</item>
+    </style>
+
+    <style name="Widget.ITInventory.BottomNavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">?attr/colorSecondaryContainer</item>
+    </style>
+</resources>

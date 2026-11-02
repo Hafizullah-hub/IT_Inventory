@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ITInventory" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Base Material DayNight colors for Night Mode -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorOnPrimary">@color/black</item>
+
+        <!-- Custom attributes for Dark Mode -->
+        <item name="customBackgroundColor">#121212</item>
+        <item name="customTextColor">#E6E1E5</item>
+        <item name="customCardBackgroundColor">#1E1E1E</item>
+
+        <!-- Bottom Navigation View Style -->
+        <item name="bottomNavigationStyle">@style/Widget.ITInventory.BottomNavigationView</item>
+    </style>
+</resources>
