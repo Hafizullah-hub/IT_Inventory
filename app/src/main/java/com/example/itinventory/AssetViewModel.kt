@@ -42,11 +42,7 @@ class AssetViewModel : ViewModel() {
     ) { assetList, query, status, type, department ->
         assetList.filter { asset ->
             val matchesQuery = query.isBlank() ||
-                    asset.id.contains(query, ignoreCase = true) ||
-                    asset.userName.contains(query, ignoreCase = true) ||
-                    asset.typeName.contains(query, ignoreCase = true) ||
-                    asset.location.contains(query, ignoreCase = true) ||
-                    asset.serialNumber.contains(query, ignoreCase = true)
+                    asset.searchableText.contains(query, ignoreCase = true)
             
             val matchesStatus = status == null || asset.status == status
             val matchesType = type == null || asset.typeName.equals(type, ignoreCase = true)
@@ -125,6 +121,31 @@ class AssetViewModel : ViewModel() {
         // Determine status (Fallback to ACTIVE as Asset.java doesn't have a status field)
         val status = AssetStatus.ACTIVE
 
+        val searchableText = buildString {
+            append("${asset.documentId.orEmpty()} ")
+            asset.coreDetails?.let {
+                append("${it.assetNo.orEmpty()} ${it.serial.orEmpty()} ${it.type.orEmpty()} ${it.manufacturer.orEmpty()} ${it.model.orEmpty()} ${it.compName.orEmpty()} ${it.ad.orEmpty()} ${it.boxLocate.orEmpty()} ")
+            }
+            asset.assignment?.let {
+                append("${it.user.orEmpty()} ${it.dept.orEmpty()} ${it.company.orEmpty()} ${it.location.orEmpty()} ${it.lastUse.orEmpty()} ")
+            }
+            asset.hardware?.let {
+                append("${it.processor.orEmpty()} ${it.ram.orEmpty()} ${it.hardisk.orEmpty()} ${it.additionalHardware.orEmpty()} ")
+            }
+            asset.software?.let {
+                it.os?.let { os -> append("${os.name.orEmpty()} ${os.bit.orEmpty()} ${os.productKey.orEmpty()} ") }
+                it.office?.let { office -> append("${office.version.orEmpty()} ${office.licenceKey.orEmpty()} ") }
+                it.antivirus?.let { av -> append("${av.name.orEmpty()} ${av.productKey.orEmpty()} ") }
+                append("${it.otherApp.orEmpty()} ")
+            }
+            asset.procurement?.let {
+                append("${it.supplier.orEmpty()} ${it.poNo.orEmpty()} ${it.amount?.toString().orEmpty()} ${it.invoiceNo.orEmpty()} ${it.warranty.orEmpty()} ")
+            }
+            asset.metadata?.let {
+                append("${it.remark1.orEmpty()} ${it.remark2.orEmpty()} ")
+            }
+        }
+
         return AssetUiModel(
             id = asset.documentId ?: asset.coreDetails?.assetNo ?: "UNKNOWN",
             typeName = type,
@@ -133,8 +154,15 @@ class AssetViewModel : ViewModel() {
             userInitials = userInitials,
             userName = user,
             userRole = dept,
-            location = "$manufacturer $model • $location",
-            serialNumber = asset.coreDetails?.serial ?: ""
+            location = location,
+            serialNumber = asset.coreDetails?.serial ?: "",
+            searchableText = searchableText,
+            manufacturer = manufacturer,
+            model = model,
+            processor = asset.hardware?.processor ?: "",
+            ram = asset.hardware?.ram ?: "",
+            compName = asset.coreDetails?.compName ?: "",
+            os = asset.software?.os?.name ?: ""
         )
     }
 }

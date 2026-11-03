@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +48,14 @@ data class AssetUiModel(
     val userRoleColor: Color = Color.Gray,
     val location: String,
     val locationIcon: ImageVector = Icons.Outlined.Place,
-    val serialNumber: String = ""
+    val serialNumber: String = "",
+    val searchableText: String = "",
+    val manufacturer: String = "",
+    val model: String = "",
+    val processor: String = "",
+    val ram: String = "",
+    val compName: String = "",
+    val os: String = ""
 )
 
 enum class AssetStatus(val label: String, val color: Color, val bgColor: Color) {
@@ -106,8 +114,14 @@ fun HomeScreen(
                     userInitials = "JD",
                     userName = "John Doe",
                     userRole = "Engineering",
-                    location = "Apple MacBook Pro • NYC Office",
-                    serialNumber = "SN-123456"
+                    location = "NYC Office",
+                    serialNumber = "SN-123456",
+                    manufacturer = "Apple",
+                    model = "MacBook Pro",
+                    processor = "M2 Pro",
+                    ram = "16GB",
+                    os = "macOS",
+                    compName = "ENG-MAC-01"
                 ),
                 AssetUiModel(
                     id = "AST-002",
@@ -117,8 +131,13 @@ fun HomeScreen(
                     userInitials = "AS",
                     userName = "Alice Smith",
                     userRole = "Design",
-                    location = "Dell XPS • SF Office",
-                    serialNumber = "SN-789012"
+                    location = "SF Office",
+                    serialNumber = "SN-789012",
+                    manufacturer = "Dell",
+                    model = "XPS 8950",
+                    processor = "Intel i9",
+                    ram = "32GB",
+                    os = "Windows 11"
                 )
             )
         }
@@ -519,18 +538,53 @@ fun AssetCard(asset: AssetUiModel, onClick: () -> Unit = {}) {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                Surface(
-                    shape = RoundedCornerShape(4.dp),
-                    color = MaterialTheme.colorScheme.secondaryContainer
-                ) {
+                // Important Hardware Specs
+                val deviceName = "${asset.manufacturer} ${asset.model}".trim()
+                if (deviceName.isNotBlank()) {
                     Text(
-                        text = asset.typeName,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                        text = deviceName,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+
+                val specs = listOf(asset.processor, asset.ram, asset.os).filter { it.isNotBlank() }
+                if (specs.isNotEmpty()) {
+                    Text(
+                        text = specs.joinToString(" • "),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Surface(
+                        shape = RoundedCornerShape(4.dp),
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    ) {
+                        Text(
+                            text = asset.typeName,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                    if (asset.compName.isNotBlank()) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = asset.compName,
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -544,36 +598,6 @@ fun AssetCard(asset: AssetUiModel, onClick: () -> Unit = {}) {
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (asset.userInitials.isNotEmpty()) {
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = asset.userInitials,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                                )
-                            }
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = if (asset.status == AssetStatus.IN_REPAIR) Icons.Outlined.Warning else Icons.Outlined.GroupWork,
-                                    contentDescription = null,
-                                    tint = if (asset.status == AssetStatus.IN_REPAIR) asset.status.color else MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
                         Column {
                             Text(
                                 text = asset.userName,
